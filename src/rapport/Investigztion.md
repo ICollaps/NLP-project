@@ -70,3 +70,10 @@ Pour la mise en œuvre de chaque étape, nous pourrions approfondir davantage. P
 - stop_words='english' demande au vectoriseur d'ignorer les mots vides courants en anglais. Vous devrez peut-être ajuster cela pour le français ou fournir votre propre liste de mots vides.
 - preprocessor=preprocess_text applique une fonction de prétraitement de texte que nous définissons pour effectuer quelques étapes de nettoyage de texte de base.
 - ngram_range=(1, 2) indique au vectoriseur d'utiliser non seulement des mots individuels comme caractéristiques, mais aussi des bigrammes (paires de mots adjacents).
+
+
+
+## A rendre
+fonction train , test , evaluate
+faire un fichier de config pemetteant de tester plusieurs types de features pour un model donné (et optionnellement plusieurs modeles)
+ajouter la possibilité de ne pas train sur tout le dataset

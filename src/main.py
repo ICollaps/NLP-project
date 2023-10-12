@@ -46,9 +46,8 @@ def test(task, input_filename, model_dump_filename, output_filename):
     # Make predictions
     predictions = model.predict(X)
     
-    # evaluate the model if y_test is available
-    accuracy = np.mean(predictions == y)
-    print(f"Test accuracy: {accuracy*100:.2f}%")
+    # Evaluate the model using the evaluate method
+    model.evaluate(X, y)
     
     # Save predictions to CSV
     output_df = pd.DataFrame({"prediction": predictions})
@@ -59,7 +58,7 @@ def test(task, input_filename, model_dump_filename, output_filename):
 
 @click.command()
 @click.option("--task", help="Can be is_comic_video, is_name or find_comic_name")
-@click.option("--input_filename", default="data/raw/train.csv", help="File training data")
+@click.option("--input_filename", default="src/data/raw/train.csv", help="File training data")
 def evaluate(task, input_filename):
 
     # Read CSV
@@ -72,18 +71,8 @@ def evaluate(task, input_filename):
     model = make_model()
 
     # Run k-fold cross validation. Print results
-    return evaluate_model(model, X, y)
+    return model.evaluate(X, y)
 
-
-
-
-def evaluate_model(model, X, y):
-    # Scikit learn has function for cross validation
-    scores = cross_val_score(model, X, y, scoring="accuracy")
-
-    print(f"Got accuracy {100 * np.mean(scores)}%")
-
-    return scores
 
 
 cli.add_command(train)

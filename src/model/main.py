@@ -1,5 +1,7 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.model_selection import cross_val_score
+import numpy as np
 from sklearn.pipeline import Pipeline
 import joblib
 from typing import Type
@@ -33,4 +35,12 @@ class Model:
     
     def load(self, filename):
         self.pipeline = joblib.load(filename)
+
+    def evaluate(self,X,y):
+        # Scikit learn has function for cross validation
+        scores = cross_val_score(self.pipeline, X, y, scoring="accuracy")
+        print(f"Got accuracy {100 * np.mean(scores)}%")
+        return scores
     
+
+

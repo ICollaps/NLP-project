@@ -11,6 +11,7 @@ def make_features(df, task):
     return X, y
 
 
+
 def get_output(df, task):
     if task == "is_comic_video":
         y = df["is_comic"]
@@ -22,5 +23,16 @@ def get_output(df, task):
         raise ValueError("Unknown task")
 
     return y
+
+
+def preprocess_text(text):
+    # Convert text to lowercase
+    text = text.lower()
+    # Remove punctuation and numbers
+    text = re.sub(r'[^\w\s]', '', text)
+    # Remove multiple spaces
+    text = re.sub(r'\s+', ' ', text).strip()
+    
+    return text
 
 

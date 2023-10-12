@@ -2,7 +2,6 @@ import click
 import numpy as np
 from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import LogisticRegression
-import joblib
 import pandas as pd
 import numpy as np
 
@@ -18,10 +17,10 @@ def cli():
 @click.command()
 @click.option("--task", help="Can be is_comic_video, is_name or find_comic_name")
 @click.option("--input_filename", default="data/raw/train.csv", help="File training data")
-@click.option("--model_dump_filename", default="models/dump.json", help="File to dump model")
+@click.option("--model_dump_filename", default="src/model/dump.json", help="File to dump model")
 def train(task, input_filename, model_dump_filename):
     df = make_dataset(input_filename)
-    X, y = make_features(df)
+    X, y = make_features(df, task)
 
     model = make_model()
     model.fit(X, y)
@@ -31,17 +30,38 @@ def train(task, input_filename, model_dump_filename):
 
 @click.command()
 @click.option("--task", help="Can be is_comic_video, is_name or find_comic_name")
-@click.option("--input_filename", default="data/raw/train.csv", help="File training data")
-@click.option("--model_dump_filename", default="models/dump.json", help="File to dump model")
-@click.option("--output_filename", default="data/processed/prediction.csv", help="Output file for predictions")
+@click.option("--input_filename", default="src/data/raw/train.csv", help="File training data")
+@click.option("--model_dump_filename", default="src/model/dump.json", help="File to dump model")
+@click.option("--output_filename", default="src/data/processed/prediction.csv", help="Output file for predictions")
 def test(task, input_filename, model_dump_filename, output_filename):
-    pass
+
+    # Load testing data
+    df = make_dataset(input_filename)
+    X, y = make_features(df, task)
+    
+    # Load the trained model
+    model = make_model()
+    model.load(model_dump_filename)
+    
+    # Make predictions
+    predictions = model.predict(X)
+    
+    # evaluate the model if y_test is available
+    accuracy = np.mean(predictions == y)
+    print(f"Test accuracy: {accuracy*100:.2f}%")
+    
+    # Save predictions to CSV
+    output_df = pd.DataFrame({"prediction": predictions})
+    output_df.to_csv(output_filename, index=False)
+    
+    print(f"Predictions saved to {output_filename}")
 
 
 @click.command()
 @click.option("--task", help="Can be is_comic_video, is_name or find_comic_name")
 @click.option("--input_filename", default="data/raw/train.csv", help="File training data")
 def evaluate(task, input_filename):
+
     # Read CSV
     df = make_dataset(input_filename)
 
@@ -53,6 +73,8 @@ def evaluate(task, input_filename):
 
     # Run k-fold cross validation. Print results
     return evaluate_model(model, X, y)
+
+
 
 
 def evaluate_model(model, X, y):

@@ -1,10 +1,14 @@
 import click
 import numpy as np
 from sklearn.model_selection import cross_val_score
+from sklearn.linear_model import LogisticRegression
+import joblib
+import pandas as pd
+import numpy as np
 
-from src.data.make_dataset import make_dataset
-from src.features.make_features import make_features
-from src.model.main import make_model
+from data.make_dataset import make_dataset
+from features.make_features import make_features
+from model.main import make_model
 
 @click.group()
 def cli():

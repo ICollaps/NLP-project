@@ -4,6 +4,7 @@
 # Arnaud: do not commit data
 /data/
 *.csv
+NLP-env/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

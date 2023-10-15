@@ -1,6 +1,10 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler
+
+
 from sklearn.feature_extraction.text import CountVectorizer , TfidfVectorizer
 from sklearn.model_selection import cross_val_score
 import numpy as np
@@ -17,11 +21,11 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
 
-# Télécharger le corpus français
-nltk.download('stopwords')
 
 # Obtenir les stopwords français
 french_stopwords = set(stopwords.words('french'))
+
+
 
 # Initialiser le stemmer français
 stemmer = SnowballStemmer('french')
@@ -42,24 +46,38 @@ def make_model():
 
 def make_pipeline(config):
 
-    feature_extraction_method = config["feature_extraction"]["method"]
+    vectorizer_method = config["vectorizer"]["method"]
+    features_method = config["features"]
     
     
     
-    if feature_extraction_method == "CountVectorizer":
+    
+    if vectorizer_method == "CountVectorizer":
         vectorizer = CountVectorizer(
+            stop_words=preprocessed_stopwords,
             preprocessor=preprocess_text
         )
 
-    elif feature_extraction_method == "TfidfVectorizer":
+    elif vectorizer_method == "TfidfVectorizer":
         vectorizer = TfidfVectorizer(
-            stop_words=list(french_stopwords),
+            stop_words=preprocessed_stopwords,
             preprocessor=preprocess_text,
             ngram_range=(1, 1)
             )
 
     else:
-        raise ValueError(f"Unknown feature extraction method: {feature_extraction_method}")
+        raise ValueError(f"Unknown feature extraction method: {vectorizer_method}")
+    
+
+
+    
+    # Define preprocessing for numeric and text features
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('num', StandardScaler(), features_method),
+            ('text', vectorizer, 'video_name')
+        ]
+    )
     
     model_type = config["model"]["type"]
     
@@ -70,9 +88,10 @@ def make_pipeline(config):
     else:
         raise ValueError(f"Unknown model type: {model_type}")
 
+    # Combine preprocessing with classifier
     return Pipeline([
-        ("vectorizer", vectorizer),
-        ("model", RandomForestClassifier()),
+        ('preprocessor', preprocessor),
+        ('model', model)
     ])
 
 
@@ -112,27 +131,47 @@ def preprocess_text(text):
     Returns:
     - str: The preprocessed text.
     """
-    # Convert text to lowercase
-    text = text.lower()
 
-    # Retirer la ponctuation et les nombres
-    text = re.sub(r'[^\w\s]', '', text)
+    # Chargement du fichier de configuration
+    with open("src/config.json", "r") as file:
+        config = json.load(file)
 
-    # Remove accents
-    text = unidecode.unidecode(text)
+    preprocess_operations = config["preprocess_operations"]
+
+
+    if "lowercase" in preprocess_operations:
+        # Convert text to lowercase
+        text = text.lower()
+
+    if "punctuation" in preprocess_operations:
+        # Retirer la ponctuation
+        text = re.sub(r'[^\w\s]', '', text)
+
+    if "accent" in preprocess_operations:
+        # Remove accents
+        text = unidecode.unidecode(text)
     
     # Tokenization
     tokens = nltk.word_tokenize(text, language='french')
     
-    # Remove non-alphabetic characters and stopwords
-    clean_tokens = [
-        token for token in tokens 
-        if token.isalpha() and token not in french_stopwords
-    ]
 
-    print(clean_tokens)
+    if "stemming" in preprocess_operations:
+        clean_tokens = [
+            stemmer.stem(token) for token in tokens 
+            if token.isalpha() and token not in french_stopwords
+        ]
+    else:
+        clean_tokens = [
+            token for token in tokens 
+            if token.isalpha() and token not in french_stopwords
+        ]
+
+    # print(clean_tokens)
     
     return ' '.join(clean_tokens)
+
+# Appliquer la même prétraitement aux stop words qu'au texte
+preprocessed_stopwords = list(set(preprocess_text(word) for word in french_stopwords))
 
 
 

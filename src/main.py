@@ -16,7 +16,7 @@ def cli():
 
 @click.command()
 @click.option("--task", help="Can be is_comic_video, is_name or find_comic_name")
-@click.option("--input_filename", default="data/raw/train.csv", help="File training data")
+@click.option("--input_filename", default="src/data/raw/train.csv", help="File training data")
 @click.option("--model_dump_filename", default="src/model/dump.json", help="File to dump model")
 def train(task, input_filename, model_dump_filename):
     df = make_dataset(input_filename)

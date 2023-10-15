@@ -77,3 +77,4 @@ Pour la mise en œuvre de chaque étape, nous pourrions approfondir davantage. P
 fonction train , test , evaluate
 faire un fichier de config pemetteant de tester plusieurs types de features pour un model donné (et optionnellement plusieurs modeles)
 ajouter la possibilité de ne pas train sur tout le dataset
+utiliser NLTK pour les stopwords

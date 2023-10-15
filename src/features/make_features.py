@@ -1,7 +1,3 @@
-from sklearn.feature_extraction.text import CountVectorizer , TfidfVectorizer
-
-import click
-import re
 
 
 def make_features(df, task):

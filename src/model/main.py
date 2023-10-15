@@ -25,8 +25,6 @@ from nltk.stem import SnowballStemmer
 # Obtenir les stopwords français
 french_stopwords = set(stopwords.words('french'))
 
-
-
 # Initialiser le stemmer français
 stemmer = SnowballStemmer('french')
 
@@ -35,7 +33,7 @@ stemmer = SnowballStemmer('french')
 
 def make_model():
 
-    # Chargement du fichier de configuration
+    # Load config file
     with open("src/config.json", "r") as file:
         config = json.load(file)
 
@@ -113,7 +111,7 @@ class Model:
         self.pipeline = joblib.load(filename)
 
     def evaluate(self,X,y):
-        # Scikit learn has function for cross validation
+
         scores = cross_val_score(self.pipeline, X, y, scoring="accuracy")
         print(f"Got accuracy {100 * np.mean(scores)}%")
         return scores
@@ -132,7 +130,7 @@ def preprocess_text(text):
     - str: The preprocessed text.
     """
 
-    # Chargement du fichier de configuration
+    # Load config file
     with open("src/config.json", "r") as file:
         config = json.load(file)
 
@@ -144,7 +142,7 @@ def preprocess_text(text):
         text = text.lower()
 
     if "punctuation" in preprocess_operations:
-        # Retirer la ponctuation
+        # Remove punctuation
         text = re.sub(r'[^\w\s]', '', text)
 
     if "accent" in preprocess_operations:
@@ -170,7 +168,7 @@ def preprocess_text(text):
     
     return ' '.join(clean_tokens)
 
-# Appliquer la même prétraitement aux stop words qu'au texte
+# Apply same preprocess to stop words
 preprocessed_stopwords = list(set(preprocess_text(word) for word in french_stopwords))
 
 

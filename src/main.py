@@ -14,6 +14,8 @@ def cli():
     pass
 
 
+
+
 @click.command()
 @click.option("--task", help="Can be is_comic_video, is_name or find_comic_name")
 @click.option("--input_filename", default="src/data/raw/train.csv", help="File training data")

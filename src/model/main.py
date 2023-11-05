@@ -1,3 +1,5 @@
+# model/main.py
+
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 
@@ -166,7 +168,12 @@ def preprocess_text(text):
 
     # print(clean_tokens)
     
-    return ' '.join(clean_tokens)
+    # return ' '.join(clean_tokens)
+    # Rejoin tokens to form the preprocessed text
+    text = ' '.join(clean_tokens)
+
+    
+    return text
 
 # Apply same preprocess to stop words
 preprocessed_stopwords = list(set(preprocess_text(word) for word in french_stopwords))

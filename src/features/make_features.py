@@ -1,14 +1,16 @@
 # make_features.py
 import pandas as pd
+import json
 
-def make_features(df : pd.DataFrame, task: str):
+
+def make_features(df : pd.DataFrame, task: str , features_list):
     
     y = get_y(df, task)
     X = get_X(df, task)
 
     # features_list = ['length', 'video_name_word_count']
     # features_list = ['is_capitalized', 'length', 'has_non_alpha']
-    features_list = []
+    # features_list = []
 
     X = create_features(X=X , features_list=features_list)
     
@@ -69,6 +71,19 @@ def create_features(
 
     if 'video_name_word_count' in features_list:
         X['video_name_word_count'] = X['X'].apply(lambda x: len(x.split()))
+
+    if 'num_uppercase' in features_list:
+        X['num_uppercase'] = X['X'].apply(lambda x: sum(1 for c in x if c.isupper()))
+    
+    if 'has_number' in features_list:
+        X['has_number'] = X['X'].apply(lambda x: int(any(char.isdigit() for char in x)))
     
     return X
+
+def get_config():
+
+    with open('src/config.json', 'r', encoding='utf-8') as f:
+        config = json.load(f)
+    
+    return config["features"]
 

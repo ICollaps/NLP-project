@@ -11,9 +11,8 @@ from joblib import dump , load
 
 
 from data.make_dataset import make_dataset , tokenize
-from features.make_features import make_features
-# from model.main import make_model
-from model.model import make_model , prepare_data , split_data
+from features.make_features import make_features , get_config
+from model.main import make_model , prepare_data , split_data
 
 @click.group()
 def cli():
@@ -31,16 +30,19 @@ def train(task, input_filename, model_dump_filename):
     dataset = make_dataset(filename=input_filename, task=task)
     click.echo("Dataset done")
 
+    click.echo("Trying to get features config...")
+    features_list = get_config()
+    click.echo("Config done")
 
     # Make features (tokenization, lowercase, stopwords, stemming...)
     click.echo("Trying to make features...")
-    X, y = make_features(df=dataset, task=task)
+    X, y = make_features(df=dataset, task=task , features_list=features_list)
     click.echo("Features done")
 
 
     # Rebalance dataset, vectorise ...
     click.echo("Trying to prepare data...")
-    X_combined, y , vectorizer = prepare_data(X=X, y=y , task=task)
+    X_combined, y , vectorizer = prepare_data(X=X, y=y , task=task , features_list=features_list)
     click.echo("Data preparation done")
 
     # Split data
@@ -71,14 +73,18 @@ def test(task, input_filename, model_dump_filename, output_filename):
     dataset = make_dataset(filename=input_filename, task=task)
     click.echo("Dataset done")
 
+    click.echo("Trying to get features config...")
+    features_list = get_config()
+    click.echo("Config done")
+
     # Make features (tokenization, lowercase, stopwords, stemming...)
     click.echo("Trying to make features...")
-    X, y = make_features(df=dataset, task=task)
+    X, y = make_features(df=dataset, task=task , features_list=features_list)
     click.echo("Features done")
     
     # Rebalance dataset, vectorise ...
     click.echo("Trying to prepare data...")
-    X_combined, y = prepare_data(X=X, y=y , task=task)
+    X_combined, y , vectorizer = prepare_data(X=X, y=y , task=task , features_list=features_list)
     click.echo("Data preparation done")
 
     X_train, X_test, y_train, y_test = split_data(X_combined, y)
@@ -119,15 +125,18 @@ def evaluate(task, input_filename):
     dataset = make_dataset(filename=input_filename, task=task)
     click.echo("Dataset done")
 
+    click.echo("Trying to get features config...")
+    features_list = get_config()
+    click.echo("Config done")
 
     # Make features (tokenization, lowercase, stopwords, stemming...)
     click.echo("Trying to make features...")
-    X, y = make_features(df=dataset, task=task)
+    X, y = make_features(df=dataset, task=task , features_list=features_list)
     click.echo("Features done")
 
     # Rebalance dataset, vectorise ...
     click.echo("Trying to prepare data...")
-    X_combined, y, vectorizer  = prepare_data(X=X, y=y , task=task)
+    X_combined, y, vectorizer  = prepare_data(X=X, y=y , task=task , features_list=features_list)
     click.echo("Data preparation done")
 
     # Object with .fit, .predict methods
@@ -183,14 +192,14 @@ def use(video_name:str, is_comic_video_model_path:str , is_name_model_path:str ,
             click.echo("A name was predicted in the video name")
             indices = [i for i, val in enumerate(is_name) if val == 1]
 
-            click.echo("Names find by index :")   
+            click.echo(f"Names find by index for the video name: {video_name}")   
             for i in indices:
-                print(tokens[i])
+                click.echo(tokens[i])
 
-            click.echo("Names find by find_comic_name model :")  
-            find_comic_name_features = find_comic_name_vectorizer.transform(tokens)
-            comic_name = find_comic_name_model.predict(find_comic_name_features)
-            print(comic_name)
+            # click.echo("Names find by find_comic_name model :")  
+            # find_comic_name_features = find_comic_name_vectorizer.transform(tokens)
+            # comic_name = find_comic_name_model.predict(find_comic_name_features)
+            # print(comic_name)
 
 
 

@@ -1,20 +1,3 @@
 {
-    "vectorizer": {
-        "method": "TfidfVectorizer"
-    },
-    "features": [
-            "video_name_length",
-            "video_name_word_count",
-            "num_uppercase",
-            "has_number"
-        ],
-    "preprocess_operations": [
-        "lowercase",
-        "punctuation",
-        "accent",
-        "stemming"
-    ],
-    "model": {
-        "type": "RandomForestClassifier"
-    }
+    "features": ["has_number"]
 }

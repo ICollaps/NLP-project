@@ -5,6 +5,8 @@
 /data/
 *.csv
 NLP-env/
+data/names/*
+data/*
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

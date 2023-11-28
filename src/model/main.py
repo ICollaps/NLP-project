@@ -78,7 +78,7 @@ def vectorize(X: pd.DataFrame , features_list: list):
 
     X_combined = hstack([X_sparse_matrix, features_sparse])
 
-    return X_combined , tfidf_vectorizer
+    return X_combined, tfidf_vectorizer
 
 
 class Model:
